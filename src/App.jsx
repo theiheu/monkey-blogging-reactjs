@@ -1,7 +1,7 @@
 import "./App.css";
 
 function App() {
-  return <>Monkey Blogging</>;
+  return <>mokey</>;
 }
 
 export default App;
