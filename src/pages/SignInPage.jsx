@@ -5,7 +5,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { Button, Field } from "../conponents";
 import { Link } from "react-router-dom";
 
-const SignUpPageLayout = styled.div`
+const SignInPageLayout = styled.div`
   min-height: 100vh;
   .logo {
     margin: auto;
@@ -38,7 +38,6 @@ const SingUpForm = styled.form`
 
 const schema = yup
   .object({
-    fullName: yup.string().required("Input is required."),
     email: yup
       .string()
       .nullable()
@@ -50,50 +49,29 @@ const schema = yup
       .matches(
         /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/,
         "Password must contain at least one uppercase letter, one lowercase letter, one number and one special character."
-      )
-      .required("Input is required."),
-    confirmPassWord: yup
-      .string()
-      .required("Input is required.")
-      .oneOf([yup.ref("passWord"), null], "Passwords must match."),
+      ),
   })
   .required();
 
-const SignUpPage = () => {
+const SignInPage = () => {
   const {
     register,
     handleSubmit,
-    reset,
-    formState: { errors, isValid, isSubmitting },
+    formState: { errors },
   } = useForm({
     resolver: yupResolver(schema),
   });
 
   const onSubmit = (data) => {
-    if (!isValid) return;
-    return new Promise((resolve) => {
-      return setTimeout(() => {
-        reset();
-        // console.log(resolve());
-        console.log("data :>> ", data);
-      }, 3000);
-    });
+    console.log(data);
   };
 
   return (
     <div className="container">
-      <SignUpPageLayout>
+      <SignInPageLayout>
         <img srcSet="./public/img/logo.png" alt="" className="logo" />
         <h1 className="header">Monkey Blogging</h1>
         <SingUpForm>
-          <Field
-            name={"fullName"}
-            label={"Full Name"}
-            error={errors.fullName?.message}
-            register={register}
-            placeholder="Please input your full name."
-            type="text"
-          ></Field>
           <Field
             name={"email"}
             label={"Email"}
@@ -101,7 +79,7 @@ const SignUpPage = () => {
             register={register}
             placeholder="Please input your email."
             type="email"
-          ></Field>
+          />
           <Field
             name={"passWord"}
             label={"Password"}
@@ -110,36 +88,22 @@ const SignUpPage = () => {
             placeholder="Please input your password."
             type="password"
             hasIcon
-          ></Field>
-          <Field
-            name={"confirmPassWord"}
-            label={"Confirm Password"}
-            error={errors.confirmPassWord?.message}
-            register={register}
-            placeholder="Please input your confirm passWord."
-            type="password"
-            hasIcon
-          ></Field>
+          />
 
-          <Button
-            type="submit"
-            onClick={handleSubmit(onSubmit)}
-            isLoading={isSubmitting}
-            // disabled
-          >
+          <Button type="submit" onClick={handleSubmit(onSubmit)}>
             Submit
           </Button>
 
           <div>
             <span>Do you already have an account? </span>
-            <Link className="link" to={"/signin"}>
-              Signin
+            <Link className="link" to={"/signup"}>
+              Signup
             </Link>
           </div>
         </SingUpForm>
-      </SignUpPageLayout>
+      </SignInPageLayout>
     </div>
   );
 };
 
-export default SignUpPage;
+export default SignInPage;

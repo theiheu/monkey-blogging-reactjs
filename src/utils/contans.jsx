@@ -5,6 +5,7 @@ export const theme = {
   grayLight: "#E7ECF3",
   tertiary: "#3A1097",
   accent: "#00D1ED",
+  blueLink: "#6884aa",
   grayF3: "#F3EDFF",
   gray6B: "#6B6B6B",
   gray23: "#232323",
@@ -12,4 +13,5 @@ export const theme = {
   grayf1: "#F1F1F3",
   gray80: "#808191",
   black: "#171725",
+  danger: "#FF3D71",
 };
