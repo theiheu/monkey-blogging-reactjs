@@ -3,7 +3,7 @@ import { useForm } from "react-hook-form";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { Button, Field } from "../conponents";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import { auth } from "../firebase-app/firebase-config";
 import { signInWithEmailAndPassword } from "firebase/auth";
@@ -57,6 +57,7 @@ const schema = yup
   .required();
 
 const SignInPage = () => {
+  const navigate = useNavigate();
   const {
     register,
     handleSubmit,
@@ -74,7 +75,8 @@ const SignInPage = () => {
       );
 
       const user = userCredential.user;
-      toast.message(`Welcome ${user.email}`);
+      toast.success(`Login success, welcome ${user.displayName}!`);
+      navigate("/");
       // ...
     } catch (error) {
       const errorCode = error.code;

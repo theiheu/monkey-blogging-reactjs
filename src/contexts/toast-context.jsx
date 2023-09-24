@@ -1,5 +1,4 @@
 import { createContext, useContext, useState } from "react";
-import { ToastContainer, toast } from "react-toastify";
 
 const ToastContext = createContext();
 
@@ -19,7 +18,7 @@ const ToastProvider = ({ children }) => {
     <ToastContext.Provider value={showToast}>
       {children}
       {/* {toastMessage && toast.success(toastMessage, { icon: "🚀" })} */}
-      <ToastContainer />
+      {/* <ToastContainer /> */}
     </ToastContext.Provider>
   );
 };

@@ -3,11 +3,11 @@ import { useForm } from "react-hook-form";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { Button, Field } from "../conponents";
-import { Link, redirect, useNavigate } from "react-router-dom";
-import { createUserWithEmailAndPassword } from "firebase/auth";
-import { auth } from "../firebase-app/firebase-config";
-import { ToastContainer, toast } from "react-toastify";
-import { useToast } from "../contexts/toast-context";
+import { Link, useNavigate } from "react-router-dom";
+import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
+import { auth, db } from "../firebase-app/firebase-config";
+import { toast } from "react-toastify";
+import { addDoc, collection } from "firebase/firestore";
 
 const SignUpPageLayout = styled.div`
   min-height: 100vh;
@@ -64,7 +64,6 @@ const schema = yup
   .required();
 
 const SignUpPage = () => {
-  const showToast = useToast();
   const navigate = useNavigate();
   const {
     register,
@@ -79,20 +78,35 @@ const SignUpPage = () => {
     if (!isValid) return;
 
     try {
+      // Authentication with email and password from firebase
       const userCredential = await createUserWithEmailAndPassword(
         auth,
         data.email,
         data.passWord
       );
-      // Đăng ký thành công
+      // SignUp successfully
       const user = userCredential.user;
+
+      await updateProfile(auth.currentUser, {
+        displayName: data.fullName,
+      });
+
+      // Add a new document with a generated id.
+      await addDoc(collection(db, "users"), {
+        fullName: data.fullName,
+        email: data.email,
+        uid: user.uid,
+        passWord: data.passWord,
+      });
+      // console.log("Document written with ID: ", docRef.id);
 
       reset();
       toast.success("The account has been successfully registered", {
         icon: "🚀",
       });
+      console.log(`user:`, user.displayName);
       // Chuyển hướng sau khi hiển thị thông báo
-      navigate("/signin");
+      navigate("/");
       // ...
     } catch (error) {
       const errorCode = error.code;
@@ -113,8 +127,9 @@ const SignUpPage = () => {
     <div className="container">
       <SignUpPageLayout>
         <Link to="/">
-          <img srcSet="./public/img/logo.png" alt="" className="logo" />
+          <img srcSet="./img/logo.png" alt="" className="logo" />
         </Link>
+
         <h1 className="header">Monkey Blogging</h1>
         <SingUpForm>
           <Field
