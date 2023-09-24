@@ -3,7 +3,11 @@ import { useForm } from "react-hook-form";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { Button, Field } from "../conponents";
-import { Link } from "react-router-dom";
+import { Link, redirect, useNavigate } from "react-router-dom";
+import { createUserWithEmailAndPassword } from "firebase/auth";
+import { auth } from "../firebase-app/firebase-config";
+import { ToastContainer, toast } from "react-toastify";
+import { useToast } from "../contexts/toast-context";
 
 const SignUpPageLayout = styled.div`
   min-height: 100vh;
@@ -60,6 +64,8 @@ const schema = yup
   .required();
 
 const SignUpPage = () => {
+  const showToast = useToast();
+  const navigate = useNavigate();
   const {
     register,
     handleSubmit,
@@ -69,21 +75,46 @@ const SignUpPage = () => {
     resolver: yupResolver(schema),
   });
 
-  const onSubmit = (data) => {
+  const onSubmit = async (data) => {
     if (!isValid) return;
-    return new Promise((resolve) => {
-      return setTimeout(() => {
+
+    try {
+      const userCredential = await createUserWithEmailAndPassword(
+        auth,
+        data.email,
+        data.passWord
+      );
+      // Đăng ký thành công
+      const user = userCredential.user;
+
+      reset();
+      toast.success("The account has been successfully registered", {
+        icon: "🚀",
+      });
+      // Chuyển hướng sau khi hiển thị thông báo
+      navigate("/signin");
+      // ...
+    } catch (error) {
+      const errorCode = error.code;
+      if (errorCode === "auth/email-already-in-use") {
         reset();
-        // console.log(resolve());
-        console.log("data :>> ", data);
-      }, 3000);
-    });
+        toast.error("The email address is already in use by another account", {
+          icon: "😱",
+        });
+      }
+      const errorMessage = error.message;
+      console.log(`errorMessage:`, errorMessage);
+
+      // Xử lý lỗi tại đây
+    }
   };
 
   return (
     <div className="container">
       <SignUpPageLayout>
-        <img srcSet="./public/img/logo.png" alt="" className="logo" />
+        <Link to="/">
+          <img srcSet="./public/img/logo.png" alt="" className="logo" />
+        </Link>
         <h1 className="header">Monkey Blogging</h1>
         <SingUpForm>
           <Field
@@ -125,7 +156,7 @@ const SignUpPage = () => {
             type="submit"
             onClick={handleSubmit(onSubmit)}
             isLoading={isSubmitting}
-            // disabled
+            disabled={isSubmitting}
           >
             Submit
           </Button>

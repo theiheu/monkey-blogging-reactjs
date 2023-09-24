@@ -4,6 +4,9 @@ import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { Button, Field } from "../conponents";
 import { Link } from "react-router-dom";
+import { ToastContainer, toast } from "react-toastify";
+import { auth } from "../firebase-app/firebase-config";
+import { signInWithEmailAndPassword } from "firebase/auth";
 
 const SignInPageLayout = styled.div`
   min-height: 100vh;
@@ -62,14 +65,51 @@ const SignInPage = () => {
     resolver: yupResolver(schema),
   });
 
-  const onSubmit = (data) => {
-    console.log(data);
+  const onSubmit = async (data) => {
+    try {
+      const userCredential = await signInWithEmailAndPassword(
+        auth,
+        data.email,
+        data.passWord
+      );
+
+      const user = userCredential.user;
+      toast.message(`Welcome ${user.email}`);
+      // ...
+    } catch (error) {
+      const errorCode = error.code;
+      console.log(`errorCode:`, errorCode);
+
+      switch (errorCode) {
+        case "auth/invalid-login-credentials":
+          toast.error("Invalid account");
+          break;
+        case "auth/invalid-email":
+          toast.error("Invalid email");
+          break;
+        case "auth/user-disabled":
+          toast.error("User disabled");
+          break;
+        case "auth/user-not-found":
+          toast.error("User not found");
+          break;
+        case "auth/wrong-password":
+          toast.error("Wrong password");
+          break;
+        case "auth/missing-password":
+          toast.error("Missing password");
+          break;
+        default:
+      }
+
+      const errorMessage = error.message;
+    }
   };
 
   return (
     <div className="container">
       <SignInPageLayout>
-        <img srcSet="./public/img/logo.png" alt="" className="logo" />
+        <img srcSet="./img/logo.png" alt="" className="logo" />
         <h1 className="header">Monkey Blogging</h1>
         <SingUpForm>
           <Field
@@ -101,6 +141,7 @@ const SignInPage = () => {
             </Link>
           </div>
         </SingUpForm>
+        <ToastContainer />
       </SignInPageLayout>
     </div>
   );
