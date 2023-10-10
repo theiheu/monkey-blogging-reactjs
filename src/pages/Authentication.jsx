@@ -1,6 +1,5 @@
 import { Link } from "react-router-dom";
 import styled from "styled-components";
-import Modal from "../conponents/modal/Modal";
 import SignInPage from "./SignInPage";
 import SignUpPage from "./SignUpPage";
 
@@ -24,20 +23,13 @@ const AuthenticationLayout = styled.div`
     color: ${(props) => props.theme.primary};
     text-decoration: underline;
   }
-  /* form {
-    max-width: 420px;
-    margin: 0 auto;
-    border-radius: 8px;
-    border: 1px solid ${(props) => props.theme.grayLight};
-    box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1);
-    padding: 50px 30px;
-  } */
 `;
 
-const Authentication = ({ checkUser, children }) => {
+const Authentication = ({ signinAndSignupFlag, children }) => {
+  console.log(`signinAndSignupFlag:`, signinAndSignupFlag);
+
   return (
     <AuthenticationLayout>
-      {/* <Modal> */}
       <div className="container">
         <Link to="/">
           <img srcSet="./img/logo.png" alt="" className="logo" />
@@ -45,9 +37,8 @@ const Authentication = ({ checkUser, children }) => {
 
         <h1 className="header">Monkey Blogging</h1>
 
-        {checkUser ? <SignUpPage /> : <SignInPage />}
+        {signinAndSignupFlag ? <SignInPage /> : <SignUpPage />}
       </div>
-      {/* </Modal> */}
     </AuthenticationLayout>
   );
 };
